@@ -1230,15 +1230,23 @@ Qed.
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+intros b c H.
+destruct c eqn:Ec.
+- reflexivity.
+- rewrite <- H.
+  + destruct b eqn:Eb.
+    reflexivity.
+    reflexivity.
+Qed.
 
 (** **** Exercise: 1 star, standard (zero_nbeq_plus_1)  *)
 Theorem zero_nbeq_plus_1 : forall n : nat,
   0 =? (n + 1) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+intros n. destruct n as [|n'] eqn:E.
+- reflexivity.
+- reflexivity.
+Qed.
 
 (* ================================================================= *)
 (** ** More on Notation (Optional) *)
@@ -1344,7 +1352,11 @@ Theorem identity_fn_applied_twice :
   (forall (x : bool), f x = x) ->
   forall (b : bool), f (f b) = b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f x b.
+  rewrite -> x.
+  rewrite -> x.
+  reflexivity.
+Qed.
 
 (** [] *)
 
@@ -1354,7 +1366,18 @@ Proof.
     to the previous one but where the second hypothesis says that the
     function [f] has the property that [f x = negb x]. *)
 
-(* FILL IN HERE *)
+Theorem negation_fn_applied_twice:
+  forall (f : bool -> bool),
+  (forall (x : bool), f x = negb x) ->
+  forall (b : bool), f (f b) = b.
+Proof.
+  intros f x b.
+  rewrite -> x.
+  rewrite -> x.
+  rewrite -> negb_involutive.
+  reflexivity.
+Qed.
+
 (* The [Import] statement on the next line tells Coq to use the
    standard library String module.  We'll use strings more in later
    chapters, but for the moment we just need syntax for literal
@@ -1372,12 +1395,43 @@ Definition manual_grade_for_negation_fn_applied_twice : option (nat*string) := N
     [destruct] and [rewrite], but destructing everything in sight is
     not the best way.) *)
 
+Theorem andb_always_false:
+  forall b : bool, andb false b = false.
+Proof.
+intros [].
+- reflexivity.
+- reflexivity.
+Qed.
+
+Theorem orb_always_true:
+  forall b : bool, orb true b = true.
+Proof.
+intros [].
+- reflexivity.
+- reflexivity.
+Qed.
+
 Theorem andb_eq_orb :
   forall (b c : bool),
   (andb b c = orb b c) ->
   b = c.
 Proof.
-  (* FILL IN HERE *) Admitted.
+destruct b.
+intros c.
+intros H.
+rewrite <- orb_always_true with c.
+rewrite <- H.
+destruct c.
+reflexivity.
+reflexivity.
+intros c.
+intros H.
+rewrite <- andb_always_false with c.
+rewrite -> H.
+destruct c.
+reflexivity.
+reflexivity.
+Qed.
 
 (** [] *)
 
